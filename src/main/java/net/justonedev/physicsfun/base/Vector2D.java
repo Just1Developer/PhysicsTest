@@ -6,6 +6,7 @@ import net.justonedev.physicsfun.exception.IllegalOperationException;
 
 import java.util.Objects;
 
+@SuppressWarnings("UnusedReturnValue")
 @Getter
 public class Vector2D {
     public static final Vector2D ZERO = new Vector2D(0, 0, true);
@@ -31,28 +32,40 @@ public class Vector2D {
         this.immutable = immutable;
     }
 
-    public void add(Vector2D other) {
+    public Vector2D add(Vector2D other) {
         if (isImmutable()) throw new IllegalOperationException("Vector is immutable.");
         setX(getX() + other.getX());
         setY(getY() + other.getY());
+        return this;
     }
 
-    public void subtract(Vector2D other) {
+    public Vector2D subtract(Vector2D other) {
         if (isImmutable()) throw new IllegalOperationException("Vector is immutable.");
         setX(getX() - other.getX());
         setY(getY() - other.getY());
+        return this;
     }
 
-    public void multiply(double factor) {
+    public Vector2D multiply(double factor) {
         if (isImmutable()) throw new IllegalOperationException("Vector is immutable.");
         setX(getX() * factor);
         setY(getY() * factor);
+        return this;
     }
 
-    public void cap(Vector2D maximum) {
+    public Vector2D cap(Vector2D maximum) {
         if (isImmutable()) throw new IllegalOperationException("Vector is immutable.");
         setX(Math.min(getX(), maximum.getX()));
         setY(Math.min(getY(), maximum.getY()));
+        return this;
+    }
+
+    public double length() {
+        return Math.sqrt(getX() * getX() + getY() * getY());
+    }
+
+    public double lengthSquared() {
+        return getX() * getX() + getY() * getY();
     }
 
     public int getIntX() {
@@ -61,6 +74,12 @@ public class Vector2D {
 
     public int getIntY() {
         return (int) Math.round(getY());
+    }
+
+    public Vector2D invert() {
+        this.setX(-this.getX());
+        this.setY(-this.getY());
+        return this;
     }
 
     public boolean isQuasiZero() {
@@ -81,5 +100,10 @@ public class Vector2D {
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
+    }
+
+    @Override
+    public String toString() {
+        return "(%f, %f)".formatted(x, y);
     }
 }

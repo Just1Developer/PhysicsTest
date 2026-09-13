@@ -13,7 +13,7 @@ public class Force implements Tickable {
     private final Vector2D decayRate; // constant
     private final double decayFactor; // linear (scales with value)
 
-    private final Vector2D force;
+    private Vector2D force;
     @Setter
     private Entity target;
 
@@ -64,6 +64,10 @@ public class Force implements Tickable {
         // only tick if there is a target
         if (target == null) return;
         target.applyForceTick(this);
+        decayTick();
+    }
+
+    protected void decayTick() {
         this.getForce().subtract(getDecayRate());
         this.getForce().multiply(getDecayFactor());
     }
@@ -71,6 +75,16 @@ public class Force implements Tickable {
     public boolean isNone() {
         return this.getForce().isQuasiZero();
     }
+
+    protected void setForce(Vector2D force) {
+        this.force = force;
+    }
+
+    protected void setForceValues(double x, double y) {
+        this.getForce().setX(x);
+        this.getForce().setY(y);
+    }
+
 
     public boolean isEqualForce(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -91,5 +105,10 @@ public class Force implements Tickable {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Force[%s, %s, %f]".formatted(getForce(), getDecayRate(), getDecayFactor());
     }
 }

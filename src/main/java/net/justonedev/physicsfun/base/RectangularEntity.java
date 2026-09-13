@@ -43,6 +43,10 @@ public class RectangularEntity extends Entity {
         super.tick();
     }
 
+    public Vector2D getCenter() {
+        return new Vector2D(getLocation().getX() + getWidth() / 2d, getLocation().getY() + height / 2d);
+    }
+
     public void setHitboxVisible(boolean visible) {
         this.setHitboxVisible(visible, Color.black);
     }

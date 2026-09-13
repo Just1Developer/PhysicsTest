@@ -2,6 +2,7 @@ package net.justonedev.physicsfun;
 
 import net.justonedev.physicsfun.base.RectangularEntity;
 import net.justonedev.physicsfun.base.Vector2D;
+import net.justonedev.physicsfun.physics.force.DirectedAttractionForce;
 import net.justonedev.physicsfun.physics.force.SlingshotForce;
 import net.justonedev.physicsfun.render.Window;
 
@@ -11,19 +12,22 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         World world = new World();
+        world.startTicking(20);
 
         Window window = new Window(world, 800, 600);
-        window.startRendering(30);
-
-        Thread.sleep(2000);
+        window.startRendering(60);
 
         var test = new RectangularEntity(100, 100, 70, 40);
         test.setHitboxVisible(true, Color.red);
         world.addEntity(test);
 
-        Thread.sleep(5000);
+        Thread.sleep(1000);
 
         test.applyNewForce(new SlingshotForce(test, new Vector2D(50, 5), 5));
+
+        DirectedAttractionForce force = new DirectedAttractionForce(new Vector2D(400, 200), 2, 2);
+        world.addOtherRenderable(force);
+        test.applyNewForce(force);
     }
 
 }
