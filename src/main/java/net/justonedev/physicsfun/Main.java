@@ -11,15 +11,14 @@ import net.justonedev.physicsfun.render.Window;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         World world = new World();
         world.startTicking(20);
 
-        Window window = new Window(world, 800, 600);
+        Window window = new Window(world, 1000, 700);
         window.startRendering(60);
 
         var test = new RectangularEntity(100, 100, 70, 40);
@@ -31,33 +30,17 @@ public class Main {
 
         test.applyNewForce(new SlingshotForce(test, new Vector2D(50, 5), 5));
 
-        SpringForce force = new SpringForce(new Vector2D(400, 200), 0.2, 0.15);
+        SpringForce force = new SpringForce(new Vector2D(window.getWidth() / 2d, window.getHeight() / 2d), 0.2, 0.15);
         world.addOtherRenderable(force);
         test.applyNewForce(force);
         test.applyNewForce(new AirResistance());
 
         makeGrabbable(test, window);
-
-        /*
-        window.addMouseListener(new MouseAdapter() {
-            /**
-             * {@inheritDoc}
-             *
-             * @param e
-             * /
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                test.getLocation().setX(e.getX());
-                test.getLocation().setY(e.getY());
-            }
-        });
-        */
     }
 
-    static void makeGrabbable(RectangularEntity entity, Window window) {
+    private static void makeGrabbable(RectangularEntity entity, Window window) {
         int headerSize = window.isUndecorated() ? 0 : 30;
-        MouseAdapter adapter = new MouseAdapter() {
+        MouseAdapter mouseEvents = new MouseAdapter() {
             int offsetX = 0;
             int offsetY = 0;
             boolean dragging = false;
@@ -96,8 +79,8 @@ public class Main {
             }
         };
 
-        window.addMouseListener(adapter);
-        window.addMouseMotionListener(adapter);
+        window.addMouseListener(mouseEvents);
+        window.addMouseMotionListener(mouseEvents);
     }
 
 }
