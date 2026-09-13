@@ -13,8 +13,9 @@ import java.awt.Stroke;
 
 public class DirectedAttractionForce extends Force implements Renderable {
 
-    private static final double DISTANCE_WEIGHT = 0.03;
-    private static final double DISTANCE_SQUARED_WEIGHT = 0;
+    private static final double DISTANCE_SCALAR = 1;
+    private static final double DISTANCE_INVERSE_WEIGHT = 2;
+    private static final double DISTANCE_SQUARED_WEIGHT = 5;
 
     private final Vector2D location;
     private final double baseAttraction;
@@ -38,16 +39,16 @@ public class DirectedAttractionForce extends Force implements Renderable {
         ticked = true;
         // we can assume target to be != null
         double distanceSquared = getDistanceSquared2();
-        double distanceSquaredFactor = distanceSquared * DISTANCE_SQUARED_WEIGHT;
+        double distanceSquaredFactor = (1 / (Math.max(1, distanceSquared))) * DISTANCE_SQUARED_WEIGHT;
 
         // do like this because one case of target loc creates a copy anyway, so minimize copies
         Vector2D targetDirection = getTargetLocationCopy().subtract(location).invert();
         double vectorLength = targetDirection.length();
-        double distanceFactor = vectorLength * DISTANCE_WEIGHT;
+        double distanceFactor = (1 / (DISTANCE_SCALAR * (Math.max(1, distanceSquared)))) * DISTANCE_INVERSE_WEIGHT;
 
         double factorSum = distanceFactor + distanceSquaredFactor + baseAttraction;
-        double finalFactor = (factorSum * strength) / vectorLength;
-        System.out.println("Target Direction: " + targetDirection + ", final factor: " + finalFactor);
+        double finalFactor = (factorSum * strength) / (Math.max(1, vectorLength));
+        System.out.printf("Target Direction: %s, final factor: %f, distanceFactor %f = (1 / (%f * %f)) * %f %n", targetDirection, finalFactor, distanceFactor, DISTANCE_SCALAR, (vectorLength + 1), DISTANCE_INVERSE_WEIGHT);
         targetDirection.multiply(finalFactor);
         super.setForce(targetDirection);
     }
@@ -92,6 +93,11 @@ public class DirectedAttractionForce extends Force implements Renderable {
         int distanceX = centerX - location.getIntX();
         int distanceY = centerY - location.getIntY();
         return distanceX * distanceX + distanceY * distanceY;
+    }
+
+    @Override
+    public boolean addDirectly() {
+        return true;
     }
 
     @Override

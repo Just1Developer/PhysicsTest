@@ -10,9 +10,14 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class Entity implements Renderable, Tickable {
+    public static Vector2D MAXIMUM_VELOCITY = new Vector2D(30, 30);
+
     @Getter
     @Setter
     protected Vector2D location;
+    @Getter
+    @Setter
+    protected Vector2D velocity;
 
     protected Set<Force> forces;
     protected List<Force> removedForces;
@@ -23,6 +28,7 @@ public abstract class Entity implements Renderable, Tickable {
 
     public Entity(int x, int y) {
         this.setLocation(new Vector2D(x, y));
+        this.setVelocity(new Vector2D(0, 0));
         forces = new HashSet<>();
         removedForces = new LinkedList<>();
     }
@@ -32,6 +38,7 @@ public abstract class Entity implements Renderable, Tickable {
         this.forces.forEach(Force::tick);
         removedForces.forEach(this.forces::remove);
         this.removedForces.clear();
+        location.add(velocity);
     }
 
     public void applyNewForce(Force force) {
@@ -40,7 +47,8 @@ public abstract class Entity implements Renderable, Tickable {
     }
 
     public void applyForceTick(Force force) {
-        this.location.add(force.getForce());
+        this.velocity.add(force.getForce()).cap(MAXIMUM_VELOCITY);
+        if (force.addDirectly()) this.location.add(force.getForce());
         if (force.isNone()) this.removedForces.add(force);
     }
 }

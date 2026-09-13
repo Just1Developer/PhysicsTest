@@ -85,6 +85,9 @@ public class Force implements Tickable {
         this.getForce().setY(y);
     }
 
+    public boolean addDirectly() {
+        return false;
+    }
 
     public boolean isEqualForce(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
