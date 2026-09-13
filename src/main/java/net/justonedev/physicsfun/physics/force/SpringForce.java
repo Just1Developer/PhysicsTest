@@ -13,10 +13,8 @@ import java.awt.Stroke;
 
 public class SpringForce extends Force implements Renderable {
 
-    private static final double DISTANCE_SCALAR = 1;
-    private static final double DISTANCE_INVERSE_WEIGHT = 2;
-    private static final double DISTANCE_SQUARED_WEIGHT = 5;
-    private static final double DEFAULT_DAMPING_VALUE = 2;
+    private static final double DEFAULT_SPRING_VALUE = 0.5;
+    private static final double DEFAULT_DAMPING_VALUE = 0.2;
 
     private final Vector2D location;
     private final double strength;
@@ -24,9 +22,14 @@ public class SpringForce extends Force implements Renderable {
     private boolean ticked;
 
     // This force scales with distance and pulls towards a point
+    public SpringForce(Vector2D targetLocation) {
+        this(targetLocation, DEFAULT_SPRING_VALUE, DEFAULT_DAMPING_VALUE);
+    }
+
     public SpringForce(Vector2D targetLocation, double strength) {
         this(targetLocation, strength, DEFAULT_DAMPING_VALUE);
     }
+
     public SpringForce(Vector2D targetLocation, double strength, double damping) {
         super(new Vector2D(0, 0));
         this.ticked = false;

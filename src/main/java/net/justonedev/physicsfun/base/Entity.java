@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class Entity implements Renderable, Tickable {
-    public static Vector2D MAXIMUM_VELOCITY = new Vector2D(30, 30);
+    private static final int SPEED_LIMIT = 150;
+    public static Vector2D MAXIMUM_VELOCITY = new Vector2D(SPEED_LIMIT, SPEED_LIMIT);
 
     @Getter
     @Setter
@@ -21,6 +22,8 @@ public abstract class Entity implements Renderable, Tickable {
 
     protected Set<Force> forces;
     protected List<Force> removedForces;
+
+    private boolean tickingSuspended = false;
 
     public Entity() {
         this(0, 0);
@@ -35,6 +38,7 @@ public abstract class Entity implements Renderable, Tickable {
 
     @Override
     public void tick() {
+        if (tickingSuspended) return;
         this.forces.forEach(Force::tick);
         removedForces.forEach(this.forces::remove);
         this.removedForces.clear();
@@ -50,5 +54,13 @@ public abstract class Entity implements Renderable, Tickable {
         this.velocity.add(force.getForce()).cap(MAXIMUM_VELOCITY);
         if (force.addDirectly()) this.location.add(force.getForce());
         if (force.isNone()) this.removedForces.add(force);
+    }
+
+    public void suspendTicking() {
+        this.tickingSuspended = true;
+    }
+
+    public void unsuspendTicking() {
+        this.tickingSuspended = false;
     }
 }
