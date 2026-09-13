@@ -3,7 +3,7 @@ package net.justonedev.physicsfun;
 import net.justonedev.physicsfun.base.RectangularEntity;
 import net.justonedev.physicsfun.base.Vector2D;
 import net.justonedev.physicsfun.physics.force.AirResistance;
-import net.justonedev.physicsfun.physics.force.DirectedAttractionForce;
+import net.justonedev.physicsfun.physics.force.SpringForce;
 import net.justonedev.physicsfun.physics.force.SlingshotForce;
 import net.justonedev.physicsfun.render.Window;
 
@@ -26,7 +26,7 @@ public class Main {
 
         test.applyNewForce(new SlingshotForce(test, new Vector2D(50, 5), 5));
 
-        DirectedAttractionForce force = new DirectedAttractionForce(new Vector2D(400, 200), 3, 1);
+        SpringForce force = new SpringForce(new Vector2D(400, 200), 0.6, 0.1);
         world.addOtherRenderable(force);
         test.applyNewForce(force);
         test.applyNewForce(new AirResistance());

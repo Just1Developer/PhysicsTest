@@ -11,46 +11,41 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
-public class DirectedAttractionForce extends Force implements Renderable {
+public class SpringForce extends Force implements Renderable {
 
     private static final double DISTANCE_SCALAR = 1;
     private static final double DISTANCE_INVERSE_WEIGHT = 2;
     private static final double DISTANCE_SQUARED_WEIGHT = 5;
+    private static final double DEFAULT_DAMPING_VALUE = 2;
 
     private final Vector2D location;
-    private final double baseAttraction;
     private final double strength;
+    private final double damping;
     private boolean ticked;
 
     // This force scales with distance and pulls towards a point
-    public DirectedAttractionForce(Vector2D targetLocation, double strength) {
-        this(targetLocation, strength, 0);
+    public SpringForce(Vector2D targetLocation, double strength) {
+        this(targetLocation, strength, DEFAULT_DAMPING_VALUE);
     }
-    public DirectedAttractionForce(Vector2D targetLocation, double strength, double baseAttraction) {
+    public SpringForce(Vector2D targetLocation, double strength, double damping) {
         super(new Vector2D(0, 0));
         this.ticked = false;
         this.location = targetLocation;
         this.strength = strength;
-        this.baseAttraction = baseAttraction;
+        this.damping = damping;
     }
 
     @Override
     protected void decayTick() {
         ticked = true;
-        // we can assume target to be != null
-        double distanceSquared = getDistanceSquared2();
-        double distanceSquaredFactor = (1 / (Math.max(1, distanceSquared))) * DISTANCE_SQUARED_WEIGHT;
-
-        // do like this because one case of target loc creates a copy anyway, so minimize copies
-        Vector2D targetDirection = getTargetLocationCopy().subtract(location).invert();
-        double vectorLength = targetDirection.length();
-        double distanceFactor = (1 / (DISTANCE_SCALAR * (Math.max(1, distanceSquared)))) * DISTANCE_INVERSE_WEIGHT;
-
-        double factorSum = distanceFactor + distanceSquaredFactor + baseAttraction;
-        double finalFactor = (factorSum * strength) / (Math.max(1, vectorLength));
-        System.out.printf("Target Direction: %s, final factor: %f, distanceFactor %f = (1 / (%f * %f)) * %f %n", targetDirection, finalFactor, distanceFactor, DISTANCE_SCALAR, (vectorLength + 1), DISTANCE_INVERSE_WEIGHT);
-        targetDirection.multiply(finalFactor);
-        super.setForce(targetDirection);
+        Entity entity = getTarget();
+        Vector2D position = getTargetLocationCopy();
+        Vector2D displacement = new Vector2D(position).subtract(location).invert();
+        Vector2D force = displacement.multiply(strength);
+        Vector2D dampingForce = new Vector2D(entity.getVelocity())
+                .multiply(-damping);
+        force.add(dampingForce);
+        setForce(force);
     }
 
     @Override
