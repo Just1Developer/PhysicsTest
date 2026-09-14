@@ -1,5 +1,6 @@
 package net.justonedev.physicsfun;
 
+import net.justonedev.physicsfun.base.Entity;
 import net.justonedev.physicsfun.base.RectangularEntity;
 import net.justonedev.physicsfun.base.Vector2D;
 import net.justonedev.physicsfun.physics.force.AirResistance;
@@ -9,8 +10,12 @@ import net.justonedev.physicsfun.physics.force.SlingshotForce;
 import net.justonedev.physicsfun.render.Window;
 
 import java.awt.Color;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -26,16 +31,34 @@ public class Main {
         world.addEntity(test);
 
         Gravity gravity = new Gravity(35);
-        test.applyNewForce(gravity);
-
-        test.applyNewForce(new SlingshotForce(test, new Vector2D(50, 5), 5));
+        world.addGlobalForce(gravity);
 
         SpringForce force = new SpringForce(new Vector2D(window.getWidth() / 2d, window.getHeight() / 2d), 0.2, 0.15);
         world.addOtherRenderable(force);
-        test.applyNewForce(force);
-        test.applyNewForce(new AirResistance());
+
+        world.addGlobalForce(force);
+        world.addGlobalForce(new AirResistance());
 
         makeGrabbable(test, window);
+
+        List<Entity> entityList = new ArrayList<>();
+        entityList.add(test);
+
+        window.addKeyListener(new KeyAdapter() {
+            final int strength = 332;
+            @Override
+            public void keyTyped(KeyEvent event) {
+                if (event.getKeyChar() == ' ') {
+                    entityList.forEach(e -> e.applyNewForce(new SlingshotForce(test, new Vector2D(Math.random() * strength - strength / 2d, Math.random() * strength - strength / 2d), 5)));
+                } else if (event.getKeyChar() == 'n' || event.getKeyChar() == 'e' || event.getKeyChar() == 's') {
+                    // "new", "spawn", or "entity"
+                    var test = new RectangularEntity(100, 100, 70, 40);
+                    test.setHitboxVisible(true, Color.getHSBColor((float) Math.random(), 0.7f, 0.6f));
+                    world.addEntity(test);
+                    entityList.add(test);
+                }
+            }
+        });
     }
 
     private static void makeGrabbable(RectangularEntity entity, Window window) {

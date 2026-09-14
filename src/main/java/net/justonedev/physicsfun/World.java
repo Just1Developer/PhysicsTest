@@ -4,9 +4,11 @@ import lombok.Getter;
 import net.justonedev.physicsfun.base.Entity;
 import net.justonedev.physicsfun.base.Renderable;
 import net.justonedev.physicsfun.base.Tickable;
+import net.justonedev.physicsfun.physics.Force;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -16,9 +18,12 @@ public class World implements Tickable {
     @Getter
     private final List<Renderable> otherRenderables;
 
+    private final List<Force> globalForces;
+
     public World() {
         entities = new LinkedList<>();
         otherRenderables = new LinkedList<>();
+        globalForces = new LinkedList<>();
     }
 
     public void addEntity(Entity entity) {
@@ -37,6 +42,14 @@ public class World implements Tickable {
         otherRenderables.remove(renderable);
     }
 
+    public void addGlobalForce(Force force) {
+        globalForces.add(force);
+    }
+
+    public void removeGlobalForce(Force force) {
+        globalForces.remove(force);
+    }
+
     public void startTicking(double tps) {
         long tickTime = Math.round(1e3 / tps);
 
@@ -50,6 +63,12 @@ public class World implements Tickable {
 
     @Override
     public void tick() {
+        Queue<Force> expired = new LinkedList<>();
+        globalForces.forEach((force) -> {
+            force.tickForTargets(entities);
+            if (force.isNone()) expired.add(force);
+        });
+        expired.forEach(globalForces::remove);
         entities.forEach(Entity::tick);
     }
 }

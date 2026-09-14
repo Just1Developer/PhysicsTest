@@ -43,6 +43,7 @@ public abstract class Entity implements Renderable, Tickable {
         removedForces.forEach(this.forces::remove);
         this.removedForces.clear();
         location.add(velocity);
+        this.resolveSelfCollisions();
     }
 
     public void applyNewForce(Force force) {
@@ -51,7 +52,7 @@ public abstract class Entity implements Renderable, Tickable {
     }
 
     public void applyForceTick(Force force) {
-        this.velocity.add(force.getForce()).cap(MAXIMUM_VELOCITY);
+        this.velocity.add(force.getForce(this)).cap(MAXIMUM_VELOCITY);
         if (force.addDirectly()) this.location.add(force.getForce());
         if (force.isNone()) this.removedForces.add(force);
     }
@@ -62,5 +63,13 @@ public abstract class Entity implements Renderable, Tickable {
 
     public void unsuspendTicking() {
         this.tickingSuspended = false;
+    }
+
+    public void resolveSelfCollisions() {
+        // later: resolves / fixes self position
+    }
+
+    public Vector2D getCenter() {
+        return getLocation();
     }
 }

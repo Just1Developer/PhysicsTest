@@ -6,6 +6,8 @@ import net.justonedev.physicsfun.base.Entity;
 import net.justonedev.physicsfun.base.Tickable;
 import net.justonedev.physicsfun.base.Vector2D;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -14,8 +16,8 @@ public class Force implements Tickable {
     private final double decayFactor; // linear (scales with value)
 
     private Vector2D force;
-    @Setter
     private Entity target;
+    private Collection<Entity> targetCollection;
 
     private final long id;
 
@@ -53,17 +55,29 @@ public class Force implements Tickable {
         this.target = target;
         this.force = initialForce;
         this.decayRate = constantDecay;
-        this.decayFactor = 1d / decayFactor;
+        this.decayFactor = decayFactor == 0 ? 0 : 1d / decayFactor;
         this.id = (long) (Math.random() * System.nanoTime());
+    }
+
+    public void setTarget(Entity newTarget) {
+        this.target = newTarget;
+        this.targetCollection = List.of(newTarget);
     }
 
     //endregion
 
     @Override
     public void tick() {
+        tickForTargets(this.targetCollection);
+        decayTick();
+    }
+
+    public void tickForTargets(Collection<Entity> targets) {
         // only tick if there is a target
-        if (target == null) return;
-        target.applyForceTick(this);
+        if (targets == null) return;
+        for (var target : targets) {
+            target.applyForceTick(this);
+        }
         decayTick();
     }
 
@@ -74,6 +88,10 @@ public class Force implements Tickable {
 
     public boolean isNone() {
         return this.getForce().isQuasiZero();
+    }
+
+    public Vector2D getForce(Entity entity) {
+        return getForce();
     }
 
     protected void setForce(Vector2D force) {

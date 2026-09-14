@@ -43,6 +43,7 @@ public class RectangularEntity extends Entity {
         super.tick();
     }
 
+    @Override
     public Vector2D getCenter() {
         return new Vector2D(getLocation().getX() + getWidth() / 2d, getLocation().getY() + height / 2d);
     }
