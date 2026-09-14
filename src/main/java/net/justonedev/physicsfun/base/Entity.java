@@ -39,7 +39,9 @@ public abstract class Entity implements Renderable, Tickable {
     @Override
     public void tick() {
         if (tickingSuspended) return;
-        this.forces.forEach(Force::tick);
+        // How do we handle decay? Simple, not at all.
+        // Decaying forces should simply not be added to multiple targets.
+        this.forces.forEach(force -> force.tickForSingleTarget(this));
         removedForces.forEach(this.forces::remove);
         this.removedForces.clear();
         location.add(velocity);
@@ -48,7 +50,7 @@ public abstract class Entity implements Renderable, Tickable {
 
     public void applyNewForce(Force force) {
         this.forces.add(force);
-        force.setTarget(this);
+        force.addTarget(this);
     }
 
     public void applyForceTick(Force force) {

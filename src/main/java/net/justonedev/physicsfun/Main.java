@@ -7,6 +7,7 @@ import net.justonedev.physicsfun.physics.force.AirResistance;
 import net.justonedev.physicsfun.physics.force.Gravity;
 import net.justonedev.physicsfun.physics.force.SpringForce;
 import net.justonedev.physicsfun.physics.force.SlingshotForce;
+import net.justonedev.physicsfun.physics.force.StringForce;
 import net.justonedev.physicsfun.render.Window;
 
 import java.awt.Color;
@@ -33,11 +34,14 @@ public class Main {
         Gravity gravity = new Gravity(35);
         world.addGlobalForce(gravity);
 
-        SpringForce force = new SpringForce(new Vector2D(window.getWidth() / 2d, window.getHeight() / 2d), 0.2, 0.15);
-        world.addOtherRenderable(force);
+        SpringForce springForce = new SpringForce(new Vector2D(window.getWidth() / 2d, window.getHeight() / 2d), 0.2, 0.15);
+        world.addOtherRenderable(springForce);
+        test.applyNewForce(springForce);
 
-        world.addGlobalForce(force);
         world.addGlobalForce(new AirResistance());
+
+        StringForce pendulumForce = new StringForce(new Vector2D(window.getWidth() / 1.6d, window.getHeight() / 2d), 100);
+        world.addOtherRenderable(pendulumForce);
 
         makeGrabbable(test, window);
 
@@ -55,7 +59,16 @@ public class Main {
                     var test = new RectangularEntity(100, 100, 70, 40);
                     test.setHitboxVisible(true, Color.getHSBColor((float) Math.random(), 0.7f, 0.6f));
                     world.addEntity(test);
+                    test.applyNewForce(springForce);
                     entityList.add(test);
+                } else if (event.getKeyChar() == 'p') {
+                    // "new", "spawn", or "entity"
+                    var test = new RectangularEntity(100, 100, 70, 40);
+                    test.setHitboxVisible(true, Color.getHSBColor((float) Math.random(), 0.7f, 0.6f));
+                    world.addEntity(test);
+                    test.applyNewForce(pendulumForce);
+                    entityList.add(test);
+                    makeGrabbable(test, window);
                 }
             }
         });

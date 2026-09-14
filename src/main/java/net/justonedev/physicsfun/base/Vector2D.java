@@ -2,7 +2,6 @@ package net.justonedev.physicsfun.base;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.justonedev.physicsfun.exception.IllegalOperationException;
 
 import java.util.Objects;
 
@@ -33,28 +32,28 @@ public class Vector2D {
     }
 
     public Vector2D add(Vector2D other) {
-        if (isImmutable()) throw new IllegalOperationException("Vector is immutable.");
+        if (isImmutable()) return this;
         setX(getX() + other.getX());
         setY(getY() + other.getY());
         return this;
     }
 
     public Vector2D subtract(Vector2D other) {
-        if (isImmutable()) throw new IllegalOperationException("Vector is immutable.");
+        if (isImmutable()) return this;
         setX(getX() - other.getX());
         setY(getY() - other.getY());
         return this;
     }
 
     public Vector2D multiply(double factor) {
-        if (isImmutable()) throw new IllegalOperationException("Vector is immutable.");
+        if (isImmutable()) return this;
         setX(getX() * factor);
         setY(getY() * factor);
         return this;
     }
 
     public Vector2D cap(Vector2D maximum) {
-        if (isImmutable()) throw new IllegalOperationException("Vector is immutable.");
+        if (isImmutable()) return this;
         setX(Math.min(getX(), maximum.getX()));
         setY(Math.min(getY(), maximum.getY()));
         return this;
