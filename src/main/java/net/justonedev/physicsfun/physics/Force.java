@@ -113,7 +113,13 @@ public class Force implements Tickable {
     }
 
     public boolean addDirectly() {
+        // add to position
         return false;
+    }
+
+    public boolean addIndirectly() {
+        // add to velocity
+        return true;
     }
 
     public boolean isEqualForce(Object o) {

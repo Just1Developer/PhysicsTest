@@ -21,7 +21,7 @@ public class StringForce extends Force implements Renderable {
     // Idea is like a pendulum
 
     private static final double DEFAULT_STRENGTH_VALUE = 1;
-    private static final double DISTANCE_DAMPING_FACTOR = 0.5;
+    private static final double DISTANCE_DAMPING_FACTOR = 0.9;
 
     private final Vector2D location;
     private final double strength;
@@ -49,13 +49,22 @@ public class StringForce extends Force implements Renderable {
 
         // TODO wrong, direction should be in direction of circle, not center or something
         // or actually a hard cap on the distance
-        displacement.multiply(1d / distance);
-        displacement.multiply(distance - stringLength);
+        //displacement.multiply(1d / distance);
+        //displacement.multiply(distance - stringLength);
+
+        //alt:
+        Vector2D okVector = new Vector2D(displacement).multiply(1d / distance).multiply(stringLength);
+        displacement.subtract(okVector);
 
         Vector2D force = displacement.multiply(strength * DISTANCE_DAMPING_FACTOR);
         System.out.println(force + "@" + position);
         // already scaled with distance
         return force;
+    }
+
+    @Override
+    public boolean addDirectly() {
+        return true;
     }
 
     @Override
@@ -65,10 +74,7 @@ public class StringForce extends Force implements Renderable {
 
     private Vector2D getTargetLocationCopy(Entity target) {
         if (target == null) return new Vector2D(0, 0);
-        if (target instanceof RectangularEntity)
-            // order does not matter because distance squares, and getCenter creates a new vector anyway
-            return ((RectangularEntity) target).getCenter();
-        return new Vector2D(target.getLocation());
+        return new Vector2D(target.getCenter());
     }
 
     private double getDistanceSquared(Entity target) {
@@ -95,11 +101,6 @@ public class StringForce extends Force implements Renderable {
         int distanceX = centerX - location.getIntX();
         int distanceY = centerY - location.getIntY();
         return distanceX * distanceX + distanceY * distanceY;
-    }
-
-    @Override
-    public boolean addDirectly() {
-        return true;
     }
 
     @Override

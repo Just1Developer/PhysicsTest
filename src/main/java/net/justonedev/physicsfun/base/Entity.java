@@ -54,8 +54,8 @@ public abstract class Entity implements Renderable, Tickable {
     }
 
     public void applyForceTick(Force force) {
-        this.velocity.add(force.getForce(this)).cap(MAXIMUM_VELOCITY);
-        if (force.addDirectly()) this.location.add(force.getForce());
+        if (force.addIndirectly()) this.velocity.add(force.getForce(this)).cap(MAXIMUM_VELOCITY);
+        if (force.addDirectly()) this.location.add(force.getForce(this));
         if (force.isNone()) this.removedForces.add(force);
     }
 
